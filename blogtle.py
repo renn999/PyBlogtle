@@ -26,7 +26,7 @@ freezer = Freezer(app)
 
 def permalink_gen(meta):
   i = parser.parse(meta['date'],yearfirst=True).strftime('%Y,%m,%d').split(',')
-  j = PERMALINK_TEMPLATE.replace(':year',i[0]).replace(':month',i[1]).replace(':i_month',str(int(i[1]))).replace(':day',i[2]).replace(':i_day',str(int(i[2]))).replace(':title',meta['title'])
+  j = PERMALINK_TEMPLATE.replace(':year',i[0]).replace(':month',i[1]).replace(':i_month',str(int(i[1]))).replace(':day',i[2]).replace(':i_day',str(int(i[2]))).replace(':title',meta['title']).replace(' ','-')
   if not j.endswith('.html') and not j.endswith('/') and not j.endswith('.htm'):
     j=j+'/'
   return j
