@@ -18,7 +18,3 @@ def has_excerpt(text):
     return True
   else:
     return False
-
-
-
-
