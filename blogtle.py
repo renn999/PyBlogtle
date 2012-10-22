@@ -53,6 +53,11 @@ def index(p_num=1):
   #page=sorted(pages,key=lambda x: x.meta['date'],reverse=True)
   return render_template('index.html', pages=page,p_num=p_num, count=count//10+1)
 
+@app.route('/atom.xml')
+def atom():
+  page=sorted(pages,key=lambda x: x.meta['date'],reverse=True)[0:20]
+  return render_template('atom.xml', pages=page)
+
 @app.route('/categories/<string:categories>/')
 def categories(categories):
   category = [p for p in pages if categories in p.meta.get('categories', [])]
