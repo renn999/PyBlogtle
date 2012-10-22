@@ -1,5 +1,5 @@
 Flask
-Flask_Frozen
-Yaml
+Frozen-Flask
+pyyaml
 Markdown
-Pygment
+Pygments
