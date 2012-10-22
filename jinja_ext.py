@@ -18,3 +18,8 @@ def has_excerpt(text):
     return True
   else:
     return False
+
+def filter_add(obj):
+  obj.jinja_env.filters['excerpt'] = excerpt
+  obj.jinja_env.tests['has_excerpt'] = has_excerpt
+  

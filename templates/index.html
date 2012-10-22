@@ -5,5 +5,16 @@
     {% with pages=pages  %}
         {% include "_list.html" %}
     {% endwith %}
-{{ const1 }}
+{% if p_num == 1 %}
+Prev_page
+{% elif p_num == 2 %}
+<a href='{{ url_for('index') }}'>Prev_page</a>
+{% else %}
+<a href='{{ url_for('index',p_num=p_num-1) }}'>Prev_page</a>
+{% endif %}
+{% if p_num == count %}
+next_page
+{% else %}
+<a href='{{ url_for('index',p_num=p_num+1) }}'>next_page</a>
+{% endif %}
 {% endblock content %}
