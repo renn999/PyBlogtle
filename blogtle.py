@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 
-import sys, os, datetime
-from flask import Flask, render_template, send_from_directory
+import sys, os, datetime, yaml,jinja_ext
+from flask import Flask, render_template, send_from_directory, make_response
 from flaskflatpages import FlatPages
 from flask_frozen import Freezer
 from dateutil import parser
 #import logging
 #logging.basicConfig()
-import jinja_ext
+
+site = yaml.safe_load(open('./_config.yml').read().decode('UTF-8'))
+
 
 DEBUG = True
 FLATPAGES_AUTO_RELOAD = DEBUG
@@ -23,6 +25,7 @@ jinja_ext.filter_add(app)
 pages = FlatPages(app)
 freezer = Freezer(app)
 
+
 def permalink_gen(meta):
   i = parser.parse(meta['date'],yearfirst=True).strftime('%Y,%m,%d').split(',')
   j = PERMALINK_TEMPLATE.replace(':year',i[0]).replace(':month',i[1]).replace(':i_month',str(int(i[1]))).replace(':day',i[2]).replace(':i_day',str(int(i[2]))).replace(':title',meta['title']).replace(' ','-')
@@ -32,6 +35,7 @@ def permalink_gen(meta):
 
 pe_to_pa=dict()
 count=0
+all_categories=[]
 for page in pages:
   if page.meta.has_key('permalink') :
     if not page.meta['permalink'].endswith('.html') and not page.meta['permalink'].endswith('/') and not page.meta['permalink'].endswith('.htm'):
@@ -45,22 +49,36 @@ for page in pages:
     else:
       pe_to_pa[page.path+'/']=page
   count = count + 1
+  all_categories = list(set(all_categories + page.meta['categories']))
 
 @app.route('/')
 @app.route('/archives/page/<int:p_num>/')
 def index(p_num=1):
   page=sorted(pages,key=lambda x: x.meta['date'],reverse=True)[10*(p_num-1):10*p_num]
-  #page=sorted(pages,key=lambda x: x.meta['date'],reverse=True)
   return render_template('index.html', pages=page,p_num=p_num, count=count//10+1)
 
 @app.route('/atom.xml')
 def atom():
-  page=sorted(pages,key=lambda x: x.meta['date'],reverse=True)[0:20]
-  return render_template('atom.xml', pages=page)
+  page=sorted(pages,key=lambda x: x.meta['date'],reverse=True)[0:10]
+  response = make_response(render_template('atom.xml', pages=page))
+  response.mimetype = 'application/xml'
+  return response
+
+@app.route('/categories/<string:categories>/atom.xml')
+def categories_atom(categories):
+  category = sorted([p for p in pages if categories in p.meta.get('categories', [])],key=lambda x: x.meta['date'],reverse=True)[0:5]
+  response = make_response(render_template('atom.xml', pages=category))
+  response.mimetype = 'application/xml'
+  return response
+
+@freezer.register_generator
+def categories_atom():
+  for categories in all_categories:
+    yield {'categories': categories}
 
 @app.route('/categories/<string:categories>/')
 def categories(categories):
-  category = [p for p in pages if categories in p.meta.get('categories', [])]
+  category = sorted([p for p in pages if categories in p.meta.get('categories', [])],key=lambda x: x.meta['date'],reverse=True)
   return render_template('categories.html', pages=category, categories=categories)
 
 @app.route('/<path:path>')
@@ -73,10 +91,8 @@ def page(path):
 
 @app.context_processor
 def inject_globals():
-    site = dict()
-    site['disqus_short_name'] = 'rennidit'
-    site['url']='http://www.renn999.twbbs.org'
     return dict(site = site)
+
 
 if __name__ == '__main__':
   if len(sys.argv) > 1 and sys.argv[1] == "build":

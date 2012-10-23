@@ -2,6 +2,7 @@
 
 import sys
 sys.path.insert(0, './')  
+from git import *
 
 try:
   from blogtle import app as app

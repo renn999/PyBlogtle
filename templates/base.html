@@ -1,13 +1,51 @@
-<!doctype html>
+{% set root_url = site.root %}
+{% if page is not defined %}{% set page = None %}{% endif %}
+<!DOCTYPE HTML>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>My site</title>
+	<meta charset="utf-8">
+	<title>{% if page.title is defined %}{{ page.title }} - {% endif %}{{ site.title }}</title>
+	<meta name="author" content="{{ site.author }}">
+
+	{# {% capture description %}{% if page.description %}{{ page.description }}{% else %}{{ content | raw_content }}{% endif %}{% endcapture %} #}
+	{# <meta name="description" content="{{ description | strip_html | condense_spaces | truncate:150 }}"> #}
+	{% if page.keywords %}<meta name="keywords" content="{{ page.keywords }}">{% endif %}
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="{{ site.subscribe_rss }}" rel="alternate" title="{{site.title}}" type="application/atom+xml">
+	<link rel="canonical" href="{{ canonical }}">
+	<link href="{{ site.root }}favicon.png" rel="shortcut icon">
+	<link href="{{ site.root }}stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 </head>
+
+
 <body>
-    <h1><a href="{{ url_for("index") }}">My site</a></h1>
-{% block content %}
+	<header id="header" class="inner">{% include "header.html" %}</header>
+	{#
+	{% unless page.banner == false %}
+		{% include banner.html %}
+	{% endunless %}
+	#}
+	<div id="content" class="inner">{# {{ content | expand_urls: root_url }} #}
+	{% block content %}
     <p>Default content to be displayed</p>
-{% endblock content %}
+  {% endblock content %}
+	</div>
+	<footer id="footer" class="inner">
+    Copyright &copy; 
+    {#{{ site.time | date: "%Y" }}#}
+    {% if site.author %}
+        {{ site.author }}
+    {% else %}
+        {{ site.title }}
+    {% endif %}
+  </footer>
+	<script src="{{ root_url }}/javascripts/slash.js"></script>
+  {% include "fancybox.html" %} <!-- Delete or comment this line to disable Fancybox -->
+  {% include "disqus.html" %}
+  {% include "google_analytics.html" %}
+  {#{% include custom/after_footer.html %} #}
 </body>
 </html>
