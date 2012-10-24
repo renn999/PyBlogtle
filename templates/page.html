@@ -1,8 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <article class="post">{% include 'article.html' %}</article>
-    {% set page_url=url_for("page", path=(page.meta.permalink if page.meta.permalink else (page.path +'/'))) %}
+    {% if page.meta.layout != "page" %}
+    <article class="post">
+    {% else %}
+    <article class="page">
+    {% endif %}
+      {% include 'article.html' %}
+    </article>
+    {% if page.sharing != false %}
+	    {% include "sharing.html" %}
+    {% endif %}
     <section id="comment">
     <h1 class="title">Comments</h1>
     <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>

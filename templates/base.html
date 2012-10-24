@@ -1,5 +1,5 @@
 {% set root_url = site.root | rtrim('/') %}
-{% if page is not defined %}{% set page = None %}{% endif %}
+{% if page is not defined %}{% set page = None %}{% else %}{% set page_url = url_for("page", path=(page.meta.permalink if page.meta.permalink else (page.path +'/'))) %}{% endif %}
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -19,8 +19,6 @@
 	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 </head>
-
-
 <body>
 	<header id="header" class="inner">{% include "header.html" %}</header>
 	{#

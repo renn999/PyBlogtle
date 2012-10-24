@@ -1,22 +1,27 @@
 {% set page_url = url_for("page", path=(page.meta.permalink if page.meta.permalink else (page.path +'/'))) %}
 {% if page.title %}
-<h1 class="title"><a href="page_url}}">
-{{ page.title }}
+<h1 class="title"><a href="{{ page_url }}">{{ page.title }}
 {# {% if site.titlecase %}{{ page.title | titlecase }}{% else %}{{ page.title }}{% endif %} #}
-</h1>
+</a></h1>
 {% endif %}
 <div class="entry-content">
   {% if index %}
     {{ page.html | excerpt  }}
-    {% if page.html is has_excerpt %}<a href="{{ url_for("page", path=(page.meta.permalink if page.meta.permalink else (page.path +'/'))) }}" class="more-link">{{ site.excerpt_link }}</a>{% endif %}
+    {% if page.html is has_excerpt %}<a href="{{root_url}}{{ page_url }}" class="more-link">{{ site.excerpt_link }}</a>{% endif %}
   {% else %}
     {{ page.html | safe }}
   {% endif %}
 </div>
+{% if page.meta.layout != "page" %}
 <div class="meta">
 	<div class="date">ttttt{# {% include "post/date.html" %}{{ time }} #}</div>
-	<div class="tags">tttttt{# {% include "post/categories.html" %} #}</div>
+	<div class="tags">
+	  {% for category in page.meta.categories %}
+    <a href='{{ url_for('categories',categories=category) }}'>{{ category }} </a>
+    {% endfor %}
+  </div>
 	{% if site.disqus_short_name and site.disqus_show_comment_count == true %}
-		<span class="comments"><a href="{{ root_url }}{{ page.url }}#disqus_thread">Comments</a></span>
+		<span class="comments"><a href="{{ site.url }}{{ page_url }}#disqus_thread">Comments</a></span>
 	{% endif %}
 </div>
+{% endif %}

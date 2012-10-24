@@ -15,7 +15,7 @@ FLATPAGES_AUTO_RELOAD = DEBUG
 FLATPAGES_EXTENSION = '.markdown'
 FLATPAGES_MD_OTHER_EXTENTION = {'readmoretag':'mdx_readmoretag','fenced_code':'pygments'}
 
-PERMALINK_TEMPLATE=':year-:month-:day-:title'
+PERMALINK_TEMPLATE=site['permalink']
 
 app = Flask(__name__,static_url_path='/',static_folder='static')
 app.config.from_object(__name__)
@@ -123,5 +123,4 @@ if __name__ == '__main__':
   if len(sys.argv) > 1 and sys.argv[1] == "build":
     freezer.freeze()
   else:
-    freezer.run(debug=True)
-
+    app.run(debug=True)
