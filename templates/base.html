@@ -1,4 +1,4 @@
-{% set root_url = site.root %}
+{% set root_url = site.root | rtrim('/') %}
 {% if page is not defined %}{% set page = None %}{% endif %}
 <!DOCTYPE HTML>
 <html>
@@ -14,8 +14,8 @@
 
 	<link href="{{ site.subscribe_rss }}" rel="alternate" title="{{site.title}}" type="application/atom+xml">
 	<link rel="canonical" href="{{ canonical }}">
-	<link href="{{ site.root }}favicon.png" rel="shortcut icon">
-	<link href="{{ site.root }}stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="{{ root_url }}/favicon.png" rel="shortcut icon">
+	<link href="{{ root_url }}/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 </head>

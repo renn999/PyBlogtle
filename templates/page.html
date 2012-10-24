@@ -1,16 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <article class="page">
-    {% if page.title %}
-    <h1 class="title">
-    {{ page.title }}
-    {# {% if site.titlecase %}{{ page.title | titlecase }}{% else %}{{ page.title }}{% endif %} #}
-    </h1>
-    {% endif %}
-    <div class="entry-content">{{ page.html|safe }}</div>
-    </article>
-    {% set page_url=url_for("page", path=(page.meta.permalink if page.meta.permalink else (page.path +'/') )) %}
+    <article class="post">{% include 'article.html' %}</article>
+    {% set page_url=url_for("page", path=(page.meta.permalink if page.meta.permalink else (page.path +'/'))) %}
     <section id="comment">
     <h1 class="title">Comments</h1>
     <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>

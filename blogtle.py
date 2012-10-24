@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys, os, datetime, yaml,jinja_ext
-from flask import Flask, render_template, send_from_directory, make_response
+from flask import Flask, render_template, send_from_directory, make_response, url_for
 from flaskflatpages import FlatPages
 from flask_frozen import Freezer
 from dateutil import parser
@@ -9,7 +9,6 @@ from dateutil import parser
 #logging.basicConfig()
 
 site = yaml.safe_load(open('./_config.yml').read().decode('UTF-8'))
-
 
 DEBUG = True
 FLATPAGES_AUTO_RELOAD = DEBUG
@@ -23,8 +22,7 @@ app.config.from_object(__name__)
 jinja_ext.filter_add(app)
 
 pages = FlatPages(app)
-freezer = Freezer(app)
-
+freezer = Freezer(app,log_url_for=False)
 
 def permalink_gen(meta):
   i = parser.parse(meta['date'],yearfirst=True).strftime('%Y,%m,%d').split(',')
@@ -51,22 +49,40 @@ for page in pages:
   count = count + 1
   all_categories = list(set(all_categories + page.meta['categories']))
 
+pages = sorted(pages,key=lambda x: x.meta['date'],reverse=True)
+
 @app.route('/')
 @app.route('/archives/page/<int:p_num>/')
 def index(p_num=1):
-  page=sorted(pages,key=lambda x: x.meta['date'],reverse=True)[10*(p_num-1):10*p_num]
-  return render_template('index.html', pages=page,p_num=p_num, count=count//10+1)
+  page=pages[10*(p_num-1):10*p_num]
+  if p_num < 2:
+    prev = None
+  elif p_num == 2:
+    prev = url_for('index')
+  else:
+    prev = url_for('index',p_num=p_num-1)
+  next = url_for('index',p_num=p_num+1) if p_num < (count//10+1) else None
+  return render_template('index.html', pages=page,page_prev = prev, page_next=next)
+
+@freezer.register_generator
+def index():
+  for p_num in range(2,(count//10+2)):
+    yield {'p_num': p_num}
 
 @app.route('/atom.xml')
 def atom():
-  page=sorted(pages,key=lambda x: x.meta['date'],reverse=True)[0:10]
+  page=pages[0:10]
   response = make_response(render_template('atom.xml', pages=page))
   response.mimetype = 'application/xml'
   return response
 
-@app.route('/categories/<string:categories>/atom.xml')
+@app.route('/archives/')
+def archives():
+  return 'hello'
+
+@app.route('/archives/categories/<string:categories>/atom.xml')
 def categories_atom(categories):
-  category = sorted([p for p in pages if categories in p.meta.get('categories', [])],key=lambda x: x.meta['date'],reverse=True)[0:5]
+  category = [p for p in pages if categories in p.meta.get('categories', [])][0:5]
   response = make_response(render_template('atom.xml', pages=category))
   response.mimetype = 'application/xml'
   return response
@@ -76,10 +92,15 @@ def categories_atom():
   for categories in all_categories:
     yield {'categories': categories}
 
-@app.route('/categories/<string:categories>/')
+@app.route('/archives/categories/<string:categories>/')
 def categories(categories):
-  category = sorted([p for p in pages if categories in p.meta.get('categories', [])],key=lambda x: x.meta['date'],reverse=True)
+  category = [p for p in pages if categories in p.meta.get('categories', [])]
   return render_template('categories.html', pages=category, categories=categories)
+
+@freezer.register_generator
+def categories():
+  for categories in all_categories:
+    yield {'categories': categories}
 
 @app.route('/<path:path>')
 def page(path):
@@ -89,14 +110,18 @@ def page(path):
   else:
     return send_from_directory(os.path.join(app.root_path, 'static'),path)
 
+@freezer.register_generator
+def page():
+  for path in pe_to_pa.keys():
+    yield {'path': path }
+    
 @app.context_processor
 def inject_globals():
     return dict(site = site)
-
 
 if __name__ == '__main__':
   if len(sys.argv) > 1 and sys.argv[1] == "build":
     freezer.freeze()
   else:
-    app.run(port=8000)
+    freezer.run(debug=True)
 
