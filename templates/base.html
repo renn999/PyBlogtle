@@ -1,5 +1,9 @@
-{% set root_url = site.root | rtrim('/') %}
-{% if page is not defined %}{% set page = None %}{% else %}{% set page_url = url_for("page", path=(page.meta.permalink if page.meta.permalink else (page.path +'/'))) %}{% endif %}
+{%- set root_url = site.root | rtrim('/') -%}
+{%- if page is not defined -%}
+  {%- set page = None -%}
+{%- else -%}
+  {% set page_url = url_for("page", path=(page.meta.permalink if page.meta.permalink else (page.path +'/'))) %}
+{% endif %}
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -14,7 +18,7 @@
 
 	<link href="{{ site.subscribe_rss }}" rel="alternate" title="{{site.title}}" type="application/atom+xml">
 	<link rel="canonical" href="{{ canonical }}">
-	<link href="{{ root_url }}/favicon.png" rel="shortcut icon">
+	<link href="{{ root_url }}/favicon.ico" rel="shortcut icon">
 	<link href="{{ root_url }}/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
@@ -33,7 +37,7 @@
 	</div>
 	<footer id="footer" class="inner">
     Copyright &copy; 
-    {#{{ site.time | date: "%Y" }}#}
+    {{ site.time.strftime("%Y") }}
     {% if site.author %}
         {{ site.author }}
     {% else %}
@@ -44,6 +48,5 @@
   {% include "fancybox.html" %} <!-- Delete or comment this line to disable Fancybox -->
   {% include "disqus.html" %}
   {% include "google_analytics.html" %}
-  {#{% include custom/after_footer.html %} #}
 </body>
 </html>

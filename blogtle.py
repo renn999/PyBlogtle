@@ -79,7 +79,7 @@ def atom():
 
 @app.route('/archives/')
 def archives():
-  return 'hello'
+  return render_template('categories.html', pages=post)
 
 @app.route('/archives/categories/<string:categories>/')
 def categories(categories):
