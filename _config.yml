@@ -2,46 +2,46 @@
 #      Main Configs       #
 # ----------------------- #
 
-url: 
-title: 
-subtitle: 
-author: 
-simple_search: 
-description: 
+url:  
+title:  
+subtitle:  
+author:  
+simple_search:  
+description:  
 
 # Default date format is "ordinal" (resulting in "July 22nd 2007")
 # You can customize the format as defined in
 # http://www.ruby-doc.org/core-1.9.2/Time.html#method-i-strftime
 # Additionally, %o will give you the ordinal representation of the day
-date_format: 
+date_format:  
 
 # RSS / Email (optional) subscription links (change if using something like Feedburner)
-subscribe_rss: 
-subscribe_email: 
+subscribe_rss:  
+subscribe_email:  
 # RSS feeds can list your email address if you like
-email: 
+email:  
 
 # ----------------------- #
 #    Jekyll & Plugins     #
 # ----------------------- #
 
 # If publishing to a subdirectory as in http://site.com/project set 'root: /project'
-root: 
-permalink: 
-source: 
-destination: 
-plugins: 
-code_dir: 
-category_dir: 
-markdown: 
-pygments: 
+root:  
+permalink:  
+source:  
+destination:  
+plugins:  
+code_dir:  
+category_dir:  
+markdown:  
+pygments:  # default python pygments have been replaced by pygments.rb
 
-paginate: 
-pagination_dir: 
-recent_posts: 
-excerpt_link: 
+paginate:  # Posts per page on the blog index
+pagination_dir:  # Directory base for pagination URLs eg. /blog/page/2/
+recent_posts:  # Posts in the sidebar Recent Posts section
+excerpt_link:  # "Continue reading" link text at the bottom of excerpted articles
 
-titlecase: 
+titlecase:  # Converts page and post titles to titlecase
 
 # list each of the sidebar modules you want to include, in the order you want them to appear.
 # To add custom asides, create files in /source/_includes/custom/asides/ and add them to the list like 'custom/asides/custom_aside_name.html'
@@ -58,43 +58,43 @@ titlecase:
 # ----------------------- #
 
 # Github repositories
-github_user: 
-github_repo_count: 
-github_show_profile_link: 
-github_skip_forks: 
+github_user:  
+github_repo_count:  
+github_show_profile_link:  
+github_skip_forks:  
 
 # Twitter
-twitter_user: 
-twitter_tweet_count: 
-twitter_show_replies: 
-twitter_follow_button: 
-twitter_show_follower_count: 
-twitter_tweet_button: 
+twitter_user:  
+twitter_tweet_count:  
+twitter_show_replies:  
+twitter_follow_button:  
+twitter_show_follower_count:  
+twitter_tweet_button:  
 
 # Google +1
-google_plus_one: 
-google_plus_one_size: 
+google_plus_one:  
+google_plus_one_size:  
 
 # Google Plus Profile
 # Hidden: No visible button, just add author information to search results
-googleplus_user: 
-googleplus_hidden: 
+googleplus_user:  
+googleplus_hidden:  
 
 # Pinboard
 pinboard_user:
-pinboard_count: 
+pinboard_count:  
 
 # Delicious
 delicious_user:
-delicious_count: 
+delicious_count:  
 
 # Disqus Comments
-disqus_short_name: 
-disqus_show_comment_count: 
+disqus_short_name:  
+disqus_show_comment_count:  
 
 # Google Analytics
-google_analytics_tracking_id: 
+google_analytics_tracking_id:  
 
 # Facebook Like
-facebook_like: 
-facebook_user: 
+facebook_like:  
+facebook_user:  
