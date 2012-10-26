@@ -1,24 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
+  {% if categories is defined %}
+  <title><![CDATA[Category: {{categories}} | {{ site.title }}]]></title>
+  <link href="{{ site.url }}/{{url_for('categories_atom',categories=categories)}}" rel="self"/>
+  {% else %}
   <title><![CDATA[{{ site.title }}]]></title>
   <link href="{{ site.url }}/atom.xml" rel="self"/>
+  {% endif %}
   <link href="{{ site.url }}/"/>
-  <updated>{# {{ site.time | date_to_xmlschema }} #}</updated>
+  <updated>{{ site.time.strftime('%Y-%m-%dT%H:%M:%S') }}{{ site.timezone }}</updated>
   <id>{{ site.url }}/</id>
   <author>
-    <name><![CDATA[{# {{ site.author | strip_html }} #}]]></name>
+    <name><![CDATA[{{ site.author | striptags }}]]></name>
     {% if site.email %}<email><![CDATA[{{ site.email }}]]></email>{% endif %}
   </author>
-  <generator uri="http://octopress.org/">Octopress</generator>
+  <generator uri="http://bbk.renn999.twbbs.org/pyblogtle">pyBlogtle</generator>
 
-  {% for post in pages %}
+  {% for page in pages %}{% set page_url = url_for("page", path=(page.meta.permalink if page.meta.permalink else (page.path +'/'))) %}
   <entry>
-    <title type="html"><![CDATA[{{ post.meta.title | cdata_escape }}]]></title>
-    <link href="{{ site.url }}{{ post.url }}"/>
-    <updated>{# {{ post.date | date_to_xmlschema }} #}</updated>
-    <id>{{ site.url }}{{ post.url }}</id>
-    <content type="html"><![CDATA[{{ post.html | excerpt | cdata_escape }}]]></content>
+    <title type="html"><![CDATA[{{ page.meta.title | cdata_escape }}]]></title>
+    <link href="{{ site.url }}{{ page.url }}"/>
+    <updated>{{ page.date.strftime('%Y-%m-%dT%H:%M:%S') }}{{ site.timezone }}</updated>
+    <id>{{ site.url }}{{ page_url }}</id>
+    <content type="html"><![CDATA[{{ page.html | cdata_escape }}]]></content>
   </entry>
   {% endfor %}
 </feed>

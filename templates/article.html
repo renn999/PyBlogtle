@@ -14,7 +14,7 @@
 </div>
 {% if page.meta.layout != "page" %}
 <div class="meta">
-	<div class="date">ttttt{# {% include "post/date.html" %}{{ time }} #}</div>
+	<div class="date">{{page.meta.date.strftime('%a %b %d %Y')}}{# {% include "post/date.html" %}{{ time }} #}</div>
 	<div class="tags">
 	  {% for category in page.meta.categories %}
     <a href='{{ url_for('categories',categories=category) }}'>{{ category }} </a>

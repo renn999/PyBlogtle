@@ -4,16 +4,16 @@ import sys, os, datetime, yaml,jinja_ext
 from flask import Flask, render_template, send_from_directory, make_response, url_for
 from flaskflatpages import FlatPages
 from flask_frozen import Freezer
-from dateutil import parser
 #import logging
 #logging.basicConfig()
 
 site = yaml.safe_load(open('./_config.yml').read().decode('UTF-8'))
-
+site['time']=datetime.datetime.now()
+site['timezone']='+0800'
 DEBUG = True
 FLATPAGES_AUTO_RELOAD = DEBUG
 FLATPAGES_EXTENSION = '.markdown'
-FLATPAGES_MD_OTHER_EXTENTION = {'readmoretag':'mdx_readmoretag','fenced_code':'pygments'}
+FLATPAGES_MD_OTHER_EXTENTION = {'readmoretag':'mdx_readmoretag','fenced_code':'pygments','octo_code':'mdx_octo_code'}
 
 PERMALINK_TEMPLATE=site['permalink']
 
@@ -25,7 +25,7 @@ pages = FlatPages(app)
 freezer = Freezer(app,log_url_for=False)
 
 def permalink_gen(meta):
-  i = parser.parse(meta['date'],yearfirst=True).strftime('%Y,%m,%d').split(',')
+  i = meta['date'].strftime('%Y,%m,%d').split(',')
   j = PERMALINK_TEMPLATE.replace(':year',i[0]).replace(':month',i[1]).replace(':i_month',str(int(i[1]))).replace(':day',i[2]).replace(':i_day',str(int(i[2]))).replace(':title',meta['title']).replace(' ','-')
   if not j.endswith('.html') and not j.endswith('/') and not j.endswith('.htm'):
     j=j+'/'
@@ -34,6 +34,7 @@ def permalink_gen(meta):
 pe_to_pa=dict()
 count=0
 all_categories=[]
+
 for page in pages:
   if page.meta.has_key('permalink') :
     if not page.meta['permalink'].endswith('.html') and not page.meta['permalink'].endswith('/') and not page.meta['permalink'].endswith('.htm'):
@@ -50,11 +51,12 @@ for page in pages:
   all_categories = list(set(all_categories + page.meta['categories']))
 
 pages = sorted(pages,key=lambda x: x.meta['date'],reverse=True)
+post = [page for page in pages if page.meta['layout']=='post']
 
 @app.route('/')
 @app.route('/archives/page/<int:p_num>/')
 def index(p_num=1):
-  page=pages[10*(p_num-1):10*p_num]
+  global post
   if p_num < 2:
     prev = None
   elif p_num == 2:
@@ -62,7 +64,7 @@ def index(p_num=1):
   else:
     prev = url_for('index',p_num=p_num-1)
   next = url_for('index',p_num=p_num+1) if p_num < (count//10+1) else None
-  return render_template('index.html', pages=page,page_prev = prev, page_next=next)
+  return render_template('index.html', pages=post[10*(p_num-1):10*p_num],page_prev = prev, page_next=next)
 
 @freezer.register_generator
 def index():
@@ -71,26 +73,13 @@ def index():
 
 @app.route('/atom.xml')
 def atom():
-  page=pages[0:10]
-  response = make_response(render_template('atom.xml', pages=page))
+  response = make_response(render_template('atom.xml', pages=post[0:10]))
   response.mimetype = 'application/xml'
   return response
 
 @app.route('/archives/')
 def archives():
   return 'hello'
-
-@app.route('/archives/categories/<string:categories>/atom.xml')
-def categories_atom(categories):
-  category = [p for p in pages if categories in p.meta.get('categories', [])][0:5]
-  response = make_response(render_template('atom.xml', pages=category))
-  response.mimetype = 'application/xml'
-  return response
-
-@freezer.register_generator
-def categories_atom():
-  for categories in all_categories:
-    yield {'categories': categories}
 
 @app.route('/archives/categories/<string:categories>/')
 def categories(categories):
@@ -99,6 +88,18 @@ def categories(categories):
 
 @freezer.register_generator
 def categories():
+  for categories in all_categories:
+    yield {'categories': categories}
+
+@app.route('/archives/categories/<string:categories>/atom.xml')
+def categories_atom(categories):
+  category = [p for p in pages if categories in p.meta.get('categories', [])][0:5]
+  response = make_response(render_template('atom.xml', pages=category,categories=categories))
+  response.mimetype = 'application/xml'
+  return response
+
+@freezer.register_generator
+def categories_atom():
   for categories in all_categories:
     yield {'categories': categories}
 

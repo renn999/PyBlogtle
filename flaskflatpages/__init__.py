@@ -14,11 +14,14 @@ from __future__ import with_statement
 import sys
 import os.path
 import itertools
+import datetime
 
 import yaml
 import markdown
 import werkzeug
 import flask
+
+from dateutil import parser
 
 sys.path.insert(0, './markdown_ext/')
 
@@ -32,7 +35,8 @@ def pygmented_markdown(text,md_ext):
     .. _Codehilite: http://www.freewisdom.org/projects/python-markdown/CodeHilite
     .. _Pygments: http://pygments.org/
     """
-    md_ext = dict(md_ext.items()+{'codehilite':'pygments'}.items())
+    md_ext = dict({'codehilite':'pygments'}.items()+md_ext.items())
+    #md_ext = dict(md_ext.items())
     extensions = []
     for key, value in md_ext.iteritems():
       try:
@@ -97,6 +101,8 @@ class Page(object):
         if not isinstance(meta, dict):
             raise ValueError("Excpected a dict in metadata for '%s', got %s"
                 % (self.path, type(meta).__name__))
+        if meta.has_key('date'):
+            meta['date'] = parser.parse(meta['date'])
         return meta
 
     def __getitem__(self, name):
