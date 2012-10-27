@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% set index = True %}
+    {% for page in pages  %}
+        <article class="post">{% include 'article.html' %}</article>
+    {% endfor %}
+<nav id="pagenavi">
+    {% if page_prev %}
+        <a href="{{page_prev}}" class="prev">Prev</a>
+    {% endif %}
+    {% if page_next %}
+        <a href="{{page_next}}" class="next">Next</a>
+    {% endif %}
+    <div class="center"><a href="{{ root_url }}/blog/archives">Blog Archives</a></div>
+</nav>
+{% endblock content %}

@@ -1,0 +1,58 @@
+{%- set root_url = site.root | rtrim('/') -%}
+{%- if page is defined -%}
+  {%- set page_title = page.title -%}
+  {%- set page_url = url_for("page", path=(page.meta.permalink if page.meta.permalink else (page.path +'/'))) -%}
+  {%- set description = page.html -%}
+{%- else -%}
+    {%- set page = None -%}
+    {%- if categories is defined -%}
+      {%- set page_title = 'Category:' + categories -%}
+      {%- set description = site.description -%}
+    {%- elif archives is defined -%}
+      {%- set page_title = archives -%}
+      {%- set description = site.description -%}
+    {%- else -%}
+      {%- set description = site.description -%}
+    {%- endif -%}
+{%- endif -%}
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{% if page_title is defined %}{{ page_title }} - {% endif %}{{ site.title }}</title>
+  <meta name="author" content="{{ site.author }}">
+  <meta name="description" content="{{ description | safe | striptags | replace('  ',' ') | truncate(150,True) }}">
+  {% if page.keywords %}<meta name="keywords" content="{{ page.keywords }}">{% endif %}
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <link href="{{ site.subscribe_rss }}" rel="alternate" title="{{site.title}}" type="application/atom+xml">
+  <link rel="canonical" href="{{ canonical }}">
+  <link href="{{url_for('static',filename='/favicon.ico')}}" rel="shortcut icon">
+  <link href="{{url_for('static',filename='stylesheets/screen.css')}}" media="screen, projection" rel="stylesheet" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+</head>
+<body>
+  <header id="header" class="inner">{% include "header.html" %}</header>
+  <div id="content" class="inner">
+  {% block content %}
+    <p>Default content to be displayed</p>
+  {% endblock content %}
+  </div>
+  <footer id="footer" class="inner">
+    Copyright &copy; 
+    {{ site.time.strftime("%Y") }}
+    {% if site.author %}
+        {{ site.author }}
+    {% else %}
+        {{ site.title }}
+    {% endif %}
+    Powered by <a href='https://github.com/renn999/PyBlogtle'>PyBlogtle</a>
+    &amp; theme <a href='http://zespia.tw/Octopress-Theme-Slash/'>slash</a>
+  </footer>
+  <script src="{{url_for('static',filename='javascripts/slash.js')}}"></script>
+  {% include "fancybox.html" %} <!-- Delete or comment this line to disable Fancybox -->
+  {% include "disqus.html" %}
+  {% include "google_analytics.html" %}
+</body>
+</html>
