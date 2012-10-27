@@ -5,7 +5,7 @@ import markdown
 
 # Global vars
 Octo_BLOCK_RE = re.compile( \
-    r'^<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>(?P<line_num>.*)</pre></div></td><td class="code"><div class="codehilite"><pre>(?P<code>.*)</pre></div>',
+    r'^<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>(?P<line_num>.*)</pre></div></td><td class="code"><div class="codehilite"><pre>(?P<code>.*)</pre></div>\n?</td></tr></table>',
     re.MULTILINE|re.DOTALL
     )
 
@@ -25,7 +25,9 @@ class coderehiliteBlockPreprocessor(markdown.postprocessors.Postprocessor):
     def run(self, text):
         box = []
         j=1
-        for i in text.split('</td></tr></table>'):
+        s_text = text.split('</td></tr></table>')
+        for i in s_text[:-1]:
+            i = i+'</td></tr></table>'
             while 1:
                 m = Octo_BLOCK_RE.search(i)
                 if m:
@@ -42,7 +44,7 @@ class coderehiliteBlockPreprocessor(markdown.postprocessors.Postprocessor):
                 else:
                     break
             box = box + [i]
-        text = '\n'.join(box)
+        text = '\n'.join(box) + s_text[-1]
         return text
 
 
