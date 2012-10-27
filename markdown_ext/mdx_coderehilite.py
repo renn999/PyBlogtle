@@ -5,7 +5,7 @@ import markdown
 
 # Global vars
 Octo_BLOCK_RE = re.compile( \
-    r'^<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>(?P<line_num>.*)</pre></div></td><td class="code"><div class="highlight"><pre>(?P<code>.*)</pre></div>',
+    r'^<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>(?P<line_num>.*)</pre></div></td><td class="code"><div class="codehilite"><pre>(?P<code>.*)</pre></div>',
     re.MULTILINE|re.DOTALL
     )
 
