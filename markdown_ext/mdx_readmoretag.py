@@ -3,7 +3,7 @@ import markdown
 class ReadMoreTagExtension(markdown.Extension):
     def extendMarkdown(self, md, md_globals):
         md.preprocessors.add('readmoretag',ReadMoreTagPreprocessor(md),'_begin')
-        #md.registerExtension(self)
+        md.registerExtension(self)
 
 class ReadMoreTagPreprocessor(markdown.preprocessors.Preprocessor):
     def run(self,lines):

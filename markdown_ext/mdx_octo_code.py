@@ -3,7 +3,6 @@
 import re
 import markdown
 from markdown.extensions.codehilite import CodeHilite, CodeHiliteExtension
-#     r'^(\{\%[ ]*(?P<fence>codeblock)[ ]*(\{?\.?(?P<lang>[a-zA-Z0-9_+-]*)\}?)?[ ]*\%\})\n(?P<code>.*?)(?<=\n)(\{\%[ ]*end(?P=fence)[ ]*\%\})$',
 # Global vars
 Octo_BLOCK_RE = re.compile( \
     r'\{\%[ ]*(?P<fence>codeblock)([ ]*lang\:(?P<lang>[a-zA-Z0-9_+-]*))?[ ]*\%\}(?P<code>.*?)\{\%[ ]*end(?P=fence)[ ]*\%\}',

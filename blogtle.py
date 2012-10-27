@@ -13,7 +13,8 @@ site['timezone']='+0800'
 DEBUG = True
 FLATPAGES_AUTO_RELOAD = DEBUG
 FLATPAGES_EXTENSION = '.markdown'
-FLATPAGES_MD_OTHER_EXTENTION = {'readmoretag':'mdx_readmoretag','fenced_code':'pygments','octo_code':'mdx_octo_code'}
+FLATPAGES_MD_OTHER_EXTENTION = {'readmoretag':'mdx_readmoretag','fenced_code':'pygments', \
+  'octo_code':'mdx_octo_code','coderehilite':'mdx_coderehilite'}
 
 PERMALINK_TEMPLATE=site['permalink']
 

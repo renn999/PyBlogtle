@@ -35,7 +35,7 @@ def pygmented_markdown(text,md_ext):
     .. _Codehilite: http://www.freewisdom.org/projects/python-markdown/CodeHilite
     .. _Pygments: http://pygments.org/
     """
-    md_ext = dict({'codehilite':'pygments'}.items()+md_ext.items())
+    md_ext = dict({'codehilite(force_linenos=True)':'pygments'}.items()+md_ext.items())
     #md_ext = dict(md_ext.items())
     extensions = []
     for key, value in md_ext.iteritems():
