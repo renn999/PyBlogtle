@@ -7,7 +7,7 @@
 <div class="entry-content">
   {% if index %}
     {{ page.html | excerpt  }}
-    {% if page.html is has_excerpt %}<a href="{{root_url}}{{ page_url }}" class="more-link">{{ site.excerpt_link }}</a>{% endif %}
+    {% if page.html is has_excerpt %}<a href="{{ page_url }}" class="more-link">{{ site.excerpt_link }}</a>{% endif %}
   {% else %}
     {{ page.html | safe }}
   {% endif %}
@@ -21,7 +21,7 @@
     {%- endfor -%}
   </div>
 	{% if site.disqus_short_name and site.disqus_show_comment_count == true %}
-		<span class="comments"><a href="{{ site.url }}{{root_url}}{{ page_url }}#disqus_thread">Comments</a></span>
+		<span class="comments"><a href="{{ site.url }}{{ page_url }}#disqus_thread">Comments</a></span>
 	{% endif %}
 </div>
 {% endif %}

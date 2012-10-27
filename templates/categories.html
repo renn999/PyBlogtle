@@ -12,7 +12,7 @@
         <section class="archives"><h1 class="year">{{ page.meta.date.strftime("%Y") }}</h1>
       {% endif %}
       <article>{% set page_url = url_for("page", path=(page.meta.permalink if page.meta.permalink else (page.path +'/'))) %}
-        <h1 class="title"><a href="{{ root_url }}{{ page_url }}">{{page.meta.title}}</a></h1>
+        <h1 class="title"><a href="{{ page_url }}">{{page.meta.title}}</a></h1>
         <div class="meta">
           <span class="date">{{ page.meta.date.strftime("%b %e") }}</span>
           <span class="tags">
@@ -20,7 +20,7 @@
             <a href='{{ url_for('categories',categories=category) }}'>{{ category }}</a>
             {%- endfor -%}</span>
          {% if site.disqus_short_name and page.meta.comments == true and site.disqus_show_comment_count == true %}
-         <span class="comments"><a href="{{ root_url }}{{ page_url }}#disqus_thread">Comments</a></span>
+         <span class="comments"><a href="{{ page_url }}#disqus_thread">Comments</a></span>
          {% endif %}
         </div>
       </article>

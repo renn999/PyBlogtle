@@ -13,6 +13,7 @@ site['timezone']='+0800'
 DEBUG = True
 FLATPAGES_AUTO_RELOAD = DEBUG
 FLATPAGES_EXTENSION = '.markdown'
+FREEZER_BASE_URL = site['root'].rstrip('/')
 FLATPAGES_MD_OTHER_EXTENTION = {'readmoretag':'mdx_readmoretag','fenced_code':'pygments', \
   'octo_code':'mdx_octo_code','coderehilite':'mdx_coderehilite'}
 
@@ -121,6 +122,19 @@ def page():
 @app.context_processor
 def inject_globals():
     return dict(site = site)
+
+@app.route('/sitemap.xml')
+def sitemap():
+  response = "<?xml version='1.0' encoding='UTF-8'?>\n<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>\n"
+  for i in pe_to_pa.keys():
+    response += '\t<url>\n'
+    response += ('\t\t<loc>'+ site['url'].rstrip('/')+ site['root'].rstrip('/') + '/' + i +'</loc>\n')
+    response += '\t\t<lastmod>'+ site['time'].strftime('%Y-%m-%dT%H:%M:%S')+ site['timezone'] +'</lastmod>\n'
+    response += '\t</url>\n'
+  response += '</urlset>'
+  response = make_response(response)
+  response.mimetype = 'application/xml'
+  return response
 
 if __name__ == '__main__':
   if len(sys.argv) > 1 and sys.argv[1] == "build":

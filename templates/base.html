@@ -27,8 +27,8 @@
 
 	<link href="{{ site.subscribe_rss }}" rel="alternate" title="{{site.title}}" type="application/atom+xml">
 	<link rel="canonical" href="{{ canonical }}">
-	<link href="{{ root_url }}/favicon.ico" rel="shortcut icon">
-	<link href="{{ root_url }}/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="{{url_for('static',filename='/favicon.ico')}}" rel="shortcut icon">
+	<link href="{{url_for('static',filename='stylesheets/screen.css')}}" media="screen, projection" rel="stylesheet" type="text/css">
 	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 </head>
@@ -48,7 +48,7 @@
         {{ site.title }}
     {% endif %}
   </footer>
-	<script src="{{ root_url }}/javascripts/slash.js"></script>
+	<script src="{{url_for('static',filename='javascripts/slash.js')}}"></script>
   {% include "fancybox.html" %} <!-- Delete or comment this line to disable Fancybox -->
   {% include "disqus.html" %}
   {% include "google_analytics.html" %}

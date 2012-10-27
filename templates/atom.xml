@@ -20,7 +20,7 @@
   {% for page in pages %}{% set page_url = url_for("page", path=(page.meta.permalink if page.meta.permalink else (page.path +'/'))) %}
   <entry>
     <title type="html"><![CDATA[{{ page.meta.title | cdata_escape }}]]></title>
-    <link href="{{ site.url }}{{ page.url }}"/>
+    <link href="{{ site.url }}{{ page_url }}"/>
     <updated>{{ page.date.strftime('%Y-%m-%dT%H:%M:%S') }}{{ site.timezone }}</updated>
     <id>{{ site.url }}{{ page_url }}</id>
     <content type="html"><![CDATA[{{ page.html | cdata_escape }}]]></content>
