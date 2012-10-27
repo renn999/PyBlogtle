@@ -80,7 +80,8 @@ def atom():
 
 @app.route('/archives/')
 def archives():
-  return render_template('categories.html', pages=post)
+  archives = 'Blog Archives'
+  return render_template('categories.html', pages=post,archives=archives)
 
 @app.route('/archives/categories/<string:categories>/')
 def categories(categories):

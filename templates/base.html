@@ -1,18 +1,27 @@
 {%- set root_url = site.root | rtrim('/') -%}
-{%- if page is not defined -%}
-  {%- set page = None -%}
+{%- if page is defined -%}
+  {%- set page_title = page.title -%}
+  {%- set page_url = url_for("page", path=(page.meta.permalink if page.meta.permalink else (page.path +'/'))) -%}
+  {%- set description = page.html -%}
 {%- else -%}
-  {% set page_url = url_for("page", path=(page.meta.permalink if page.meta.permalink else (page.path +'/'))) %}
-{% endif %}
+    {%- set page = None -%}
+    {%- if categories is defined -%}
+      {%- set page_title = 'Category:' + categories -%}
+      {%- set description = site.description -%}
+    {%- elif archives is defined -%}
+      {%- set page_title = archives -%}
+      {%- set description = site.description -%}
+    {%- else -%}
+      {%- set description = site.description -%}
+    {%- endif -%}
+{%- endif -%}
 <!DOCTYPE HTML>
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>{% if page.title is defined %}{{ page.title }} - {% endif %}{{ site.title }}</title>
+	<title>{% if page_title is defined %}{{ page_title }} - {% endif %}{{ site.title }}</title>
 	<meta name="author" content="{{ site.author }}">
-
-	{# {% capture description %}{% if page.description %}{{ page.description }}{% else %}{{ content | raw_content }}{% endif %}{% endcapture %} #}
-	{# <meta name="description" content="{{ description | strip_html | condense_spaces | truncate:150 }}"> #}
+	<meta name="description" content="{{ description | safe | striptags | replace('  ',' ') | truncate(150,True) }}">
 	{% if page.keywords %}<meta name="keywords" content="{{ page.keywords }}">{% endif %}
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -21,16 +30,11 @@
 	<link href="{{ root_url }}/favicon.ico" rel="shortcut icon">
 	<link href="{{ root_url }}/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 </head>
 <body>
 	<header id="header" class="inner">{% include "header.html" %}</header>
-	{#
-	{% unless page.banner == false %}
-		{% include banner.html %}
-	{% endunless %}
-	#}
-	<div id="content" class="inner">{# {{ content | expand_urls: root_url }} #}
+	<div id="content" class="inner">
 	{% block content %}
     <p>Default content to be displayed</p>
   {% endblock content %}
