@@ -24,7 +24,7 @@ import flask
 from werkzeug.utils import import_string
 from dateutil import parser
 
-sys.path.insert(0, './markdown_ext/')
+sys.path.insert(0, os.path.join(os.getcwd(),'markdown_ext/'))
 
 VERSION = '0.4'
 

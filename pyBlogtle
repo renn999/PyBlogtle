@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 
 import sys, os
-sys.path.insert(0, './')  
+sys.path.insert(0,os.getcwd())  
 from git import Git
-
-GIT_PYTHON_TRACE='full'
 
 def initial():
   try:
@@ -17,10 +15,10 @@ def initial():
 def run_help():
   pass
 
-def init(path='./'):
+def init(path=os.getcwd()):
   
   if path[0] != '.' and path[0] != '/':
-    path = './' + path
+    path = os.path.join('./',path)
   if path[-1] != '/':
     path = path + '/'
   
@@ -38,16 +36,23 @@ def init(path='./'):
   g = Git(path)
   print "Form github cloning into " + path + ( ' ' if len(folder) else 'PyBlogtle/ ' ) + ". Please wait..."
   g.execute(['git','clone','git@github.com:renn999/PyBlogtle.git']+folder)
-  print "git clone complete. please Try to make configurate in _config.yml and"
+  print "Git clone complete. please Try to make configurate in _config.yml and where do you want to host blog"
 
+def setup_deploy():
+  pass
 
 if __name__ == '__main__':
   if len(sys.argv) > 1:
     if initial():
       if sys.argv[1] == "build":
+        print 'Building ...'
         from blogtle import freezer as freezer
         freezer.freeze()
+        print 'done!'
+      elif sys.argv[1] == "setup_deploy":
+        setup_deploy()
       else:
+        print 'Running preview, press <ctrl>+<c> to stop.'
         app.run()
     else:
       if sys.argv[1] == "init":
