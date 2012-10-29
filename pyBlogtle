@@ -1,24 +1,49 @@
 #!/usr/bin/env python
 
-import sys
+import sys, os
 sys.path.insert(0, './')  
-from git import *
+from git import Git
 
-try:
-  from blogtle import app as app
-  none_init = False
-except:
-  none_init = True
+GIT_PYTHON_TRACE='full'
+
+def initial():
+  try:
+    global app
+    from blogtle import app as app
+    return True
+  except:
+    return False
 
 def run_help():
   pass
 
-def init():
-  pass
+def init(path='./'):
+  
+  if path[0] != '.' and path[0] != '/':
+    path = './' + path
+  if path[-1] != '/':
+    path = path + '/'
+  
+  if not os.path.isdir(path):
+    if os.path.isfile(path) or os.path.islink(path):
+      print 'The path goes something wrong! Please checkout, or use an other path.'
+    else:
+      os.mkdir(path)
+  
+  elif len(os.listdir(path)) == 0:
+    folder = ['./']
+  else:
+    folder = []
+  
+  g = Git(path)
+  print "Form github cloning into " + path + ( ' ' if len(folder) else 'PyBlogtle/ ' ) + ". Please wait..."
+  g.execute(['git','clone','git@github.com:renn999/PyBlogtle.git']+folder)
+  print "git clone complete. please Try to make configurate in _config.yml and"
+
 
 if __name__ == '__main__':
   if len(sys.argv) > 1:
-    if not none_init:
+    if initial():
       if sys.argv[1] == "build":
         from blogtle import freezer as freezer
         freezer.freeze()
@@ -26,7 +51,7 @@ if __name__ == '__main__':
         app.run()
     else:
       if sys.argv[1] == "init":
-        init()
+        init(sys.argv[2] if len(sys.argv)>2 else './')
       else:
         print 'please run init first. Or there is some thing wrong!'
   else:

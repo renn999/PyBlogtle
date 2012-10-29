@@ -21,6 +21,7 @@ import markdown
 import werkzeug
 import flask
 
+from werkzeug.utils import import_string
 from dateutil import parser
 
 sys.path.insert(0, './markdown_ext/')
@@ -36,11 +37,10 @@ def pygmented_markdown(text,md_ext):
     .. _Pygments: http://pygments.org/
     """
     md_ext = dict({'codehilite(force_linenos=True)':'pygments'}.items()+md_ext.items())
-    #md_ext = dict(md_ext.items())
     extensions = []
     for key, value in md_ext.iteritems():
       try:
-          exec("import "+value)
+          import_string(value)
       except ImportError:
           extensions = []
       else:
@@ -189,17 +189,7 @@ class FlatPages(object):
         except KeyError:
             return default
 
-    def get_or_404(self, path):
-        """Returns the :class:`Page` object at ``path``,
-        or raise :class:`NotFound` if there is no such page.
-        This is caught by Flask and triggers a 404 error.
-
-        """
-        page = self.get(path)
-        if not page:
-            flask.abort(404)
-        return page
-
+    
     @property
     def root(self):
         """Full path to the directory where pages are looked for.
