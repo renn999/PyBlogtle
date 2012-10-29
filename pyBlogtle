@@ -16,7 +16,6 @@ def run_help():
   pass
 
 def init(path=os.getcwd()):
-  
   if path[0] != '.' and path[0] != '/':
     path = os.path.join('./',path)
   if path[-1] != '/':
@@ -28,7 +27,7 @@ def init(path=os.getcwd()):
     else:
       os.mkdir(path)
   
-  elif len(os.listdir(path)) == 0:
+  if len(os.listdir(path)) == 0:
     folder = ['./']
   else:
     folder = []
@@ -39,7 +38,16 @@ def init(path=os.getcwd()):
   print "Git clone complete. please Try to make configurate in _config.yml and where do you want to host blog"
 
 def setup_deploy():
-  pass
+  i = raw_input('> ')
+  g = Git(os.getcwd())
+  g.execute(['git', 'remote', 'rename', 'origin', 'pyBlogtle'])
+  g.execute(['git', 'branch', '-m', 'master', 'source'])
+  g.execute(['git','remote','add','origin',i])
+  j = os.path.join(os.getcwd(),'_deploy')
+  os.mkdir(j)
+  g = Git(j)
+  g.init()
+  g.execute(['git','remote','add','origin',i])
 
 if __name__ == '__main__':
   if len(sys.argv) > 1:
@@ -49,14 +57,14 @@ if __name__ == '__main__':
         from blogtle import freezer as freezer
         freezer.freeze()
         print 'done!'
-      elif sys.argv[1] == "setup_deploy":
-        setup_deploy()
       else:
         print 'Running preview, press <ctrl>+<c> to stop.'
         app.run()
     else:
       if sys.argv[1] == "init":
-        init(sys.argv[2] if len(sys.argv)>2 else './')
+        init(sys.argv[2] if len(sys.argv)>2 else os.getcwd())
+      elif sys.argv[1] == "setup_deploy":
+        setup_deploy()
       else:
         print 'please run init first. Or there is some thing wrong!'
   else:
