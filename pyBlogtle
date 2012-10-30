@@ -3,6 +3,8 @@
 import sys, os
 sys.path.insert(0,os.getcwd())  
 from git import Git
+import shutil, time
+import subprocess
 
 def initial():
   try:
@@ -34,11 +36,11 @@ def init(path=os.getcwd()):
   
   g = Git(path)
   print "Form github cloning into " + path + ( ' ' if len(folder) else 'PyBlogtle/ ' ) + ". Please wait..."
-  g.execute(['git','clone','git@github.com:renn999/PyBlogtle.git']+folder)
+  p = g.execute(['git','clone','git@github.com:renn999/PyBlogtle.git']+folder)
   print "Git clone complete. please Try to make configurate in _config.yml and where do you want to host blog"
 
 def setup_deploy():
-  i = raw_input('> ')
+  i = raw_input('Please enter your git repository url:\n>')
   g = Git(os.getcwd())
   g.execute(['git', 'remote', 'rename', 'origin', 'pyBlogtle'])
   g.execute(['git', 'branch', '-m', 'master', 'source'])
@@ -49,22 +51,45 @@ def setup_deploy():
   g.init()
   g.execute(['git','remote','add','origin',i])
 
+def deploy():
+  build_dir = os.path.join(os.getcwd(),'build')
+  deploy_dir = os.path.join(os.getcwd(),'_deploy')
+  for i in os.listdir(deploy_dir):
+    if i == '.git':
+      pass
+    elif os.path.isdir(os.path.join(deploy_dir,i)):
+      shutil.rmtree(os.path.join(deploy_dir,i))
+    else:
+      os.unlink(os.path.join(deploy_dir,i))
+  for i in os.listdir(build_dir):
+    if os.path.isdir(os.path.join(build_dir,i)):
+      shutil.copytree(os.path.join(build_dir,i),os.path.join(deploy_dir,i))
+    else:
+      shutil.copy(os.path.join(build_dir,i),os.path.join(deploy_dir,i))
+  g = Git(deploy_dir)
+  g.execute(['git','add','.'])
+  now_time =  time.strftime('%X %x %Z')
+  g.execute(['git','commit','-a','-m','"Site updated at '+now_time+'"'])
+  g.execute(['git','push','origin','master'])
+
 if __name__ == '__main__':
   if len(sys.argv) > 1:
-    if initial():
+    if sys.argv[1] == "setup_deploy":
+      setup_deploy()
+    elif initial():
       if sys.argv[1] == "build":
         print 'Building ...'
         from blogtle import freezer as freezer
         freezer.freeze()
         print 'done!'
+      if sys.argv[1] == "deploy":
+        deploy()
       else:
         print 'Running preview, press <ctrl>+<c> to stop.'
         app.run()
     else:
       if sys.argv[1] == "init":
         init(sys.argv[2] if len(sys.argv)>2 else os.getcwd())
-      elif sys.argv[1] == "setup_deploy":
-        setup_deploy()
       else:
         print 'please run init first. Or there is some thing wrong!'
   else:
