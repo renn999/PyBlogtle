@@ -82,7 +82,7 @@ if __name__ == '__main__':
         from blogtle import freezer as freezer
         freezer.freeze()
         print 'done!'
-      if sys.argv[1] == "deploy":
+      elif sys.argv[1] == "deploy":
         deploy()
       else:
         print 'Running preview, press <ctrl>+<c> to stop.'
