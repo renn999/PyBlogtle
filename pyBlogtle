@@ -36,7 +36,7 @@ def init(path=os.getcwd()):
   
   g = Git(path)
   print "Form github cloning into " + path + ( ' ' if len(folder) else 'PyBlogtle/ ' ) + ". Please wait..."
-  p = g.execute(['git','clone','git@github.com:renn999/PyBlogtle.git']+folder)
+  g.execute(['git','clone','git@github.com:renn999/PyBlogtle.git']+folder)
   print "Git clone complete. please Try to make configurate in _config.yml and where do you want to host blog"
 
 def setup_deploy():
@@ -72,17 +72,23 @@ def deploy():
   g.execute(['git','commit','-a','-m','"Site updated at '+now_time+'"'])
   g.execute(['git','push','origin','master'])
 
+def build():
+  print 'Building ...'
+  from blogtle import freezer as freezer
+  freezer.freeze()
+  print 'done!'
+
 if __name__ == '__main__':
   if len(sys.argv) > 1:
     if sys.argv[1] == "setup_deploy":
       setup_deploy()
     elif initial():
       if sys.argv[1] == "build":
-        print 'Building ...'
-        from blogtle import freezer as freezer
-        freezer.freeze()
-        print 'done!'
+        build()
       elif sys.argv[1] == "deploy":
+        deploy()
+      elif sys.argv[1] == "bui_dep":
+        build()
         deploy()
       else:
         print 'Running preview, press <ctrl>+<c> to stop.'

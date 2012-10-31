@@ -12,7 +12,7 @@
 
 from __future__ import with_statement
 import sys
-import os.path
+import os
 import itertools
 import datetime
 
@@ -29,15 +29,25 @@ sys.path.insert(0, os.path.join(os.getcwd(),'markdown_ext/'))
 VERSION = '0.4'
 
 
-def pygmented_markdown(text,md_ext):
+def pygmented_markdown(text):
     """Render Markdown text to HTML. Uses the `Codehilite`_ extension
     if `Pygments`_ is available.
 
     .. _Codehilite: http://www.freewisdom.org/projects/python-markdown/CodeHilite
     .. _Pygments: http://pygments.org/
     """
-    md_ext = dict({'codehilite(force_linenos=True)':'pygments'}.items()+md_ext.items())
     extensions = []
+    for i,j,k in os.walk(os.path.join(os.getcwd(),'markdown_ext/')):
+        for l in (m for m in k if m.endswith('.py')) :
+            try:
+                l = l.replace('.py','')
+                import_string(l)
+            except ImportError:
+                extensions = []
+            else:
+                l = l.replace('mdx_','')
+                extensions = extensions + [l]
+    md_ext = dict({'codehilite(force_linenos=True)':'pygments','fenced_code':'pygments'})
     for key, value in md_ext.iteritems():
       try:
           import_string(value)
@@ -65,14 +75,13 @@ def pygments_style_defs(style='default'):
 
 
 class Page(object):
-    def __init__(self, path, meta_yaml, body, html_renderer, md_extend):
+    def __init__(self, path, meta_yaml, body, html_renderer):
         #: Path this pages was obtained from, as in ``pages.get(path)``.
         self.path = path
         #: Content of the pages.
         self.body = body
         self._meta_yaml = meta_yaml
         self.html_renderer = html_renderer
-        self.md_extend = md_extend
 
     def __repr__(self):
         return '<Page %r>' % self.path
@@ -81,7 +90,7 @@ class Page(object):
     def html(self):
         """The content of the page, rendered as HTML by the configured renderer.
         """
-        return self.html_renderer(self.body, self.md_extend)
+        return self.html_renderer(self.body)
 
     def __html__(self):
         """In a template, ``{{ page }}`` is equivalent to
@@ -146,7 +155,6 @@ class FlatPages(object):
         app.config.setdefault('FLATPAGES_ENCODING', 'utf8')
         app.config.setdefault('FLATPAGES_HTML_RENDERER', pygmented_markdown)
         app.config.setdefault('FLATPAGES_AUTO_RELOAD', 'if debug')
-        app.config.setdefault('FLATPAGES_MD_OTHER_EXTENTION', {})
 
         self.app = app
 
@@ -216,7 +224,6 @@ class FlatPages(object):
                     name_without_extension = name[:-len(extension)]
                     path = u'/'.join(path_prefix + (name_without_extension,))
                     pages[path] = self._load_file(path, full_name)
-
         extension = self.app.config['FLATPAGES_EXTENSION']
         pages = {}
         # Fail if the root is a non-ASCII byte string. Use Unicode.
@@ -246,7 +253,6 @@ class FlatPages(object):
         content = u'\n'.join(lines)
 
         html_renderer = self.app.config['FLATPAGES_HTML_RENDERER']
-        md_extend = self.app.config['FLATPAGES_MD_OTHER_EXTENTION']
         if not callable(html_renderer):
             html_renderer = werkzeug.import_string(html_renderer)
-        return Page(path, meta, content, html_renderer, md_extend)
+        return Page(path, meta, content, html_renderer)
