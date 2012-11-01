@@ -69,7 +69,7 @@ def deploy():
   g = Git(deploy_dir)
   g.execute(['git','add','.'])
   now_time =  time.strftime('%X %x %Z')
-  g.execute(['git','commit','-a','-m','"Site updated at '+now_time+'"'])
+  g.execute(['git','commit','-a','-m','Site updated at '+now_time])
   g.execute(['git','push','origin','master'])
 
 def build():
