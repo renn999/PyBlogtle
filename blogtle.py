@@ -65,12 +65,12 @@ def index(p_num=1):
     prev = url_for('index')
   else:
     prev = url_for('index',p_num=p_num-1)
-  next = url_for('index',p_num=p_num+1) if p_num < (count//10+1) else None
-  return render_template('index.html', pages=post[10*(p_num-1):10*p_num],page_prev = prev, page_next=next)
+  next = url_for('index',p_num=p_num+1) if p_num < (count//site['paginate']+1) else None
+  return render_template('index.html', pages=post[site['paginate']*(p_num-1):site['paginate']*p_num],page_prev = prev, page_next=next)
 
 @freezer.register_generator
 def index():
-  for p_num in range(2,(count//10+2)):
+  for p_num in range(2,(count//site['paginate']+1)):
     yield {'p_num': p_num}
 
 @app.route('/atom.xml')

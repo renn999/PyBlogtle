@@ -96,7 +96,7 @@ if __name__ == '__main__':
       elif sys.argv[1] == "theme_set":
         if len(sys.argv) > 2:
           theme_set(sys.argv[2])
-        else
+        else:
           pass
       else:
         print 'Running preview, press <ctrl>+<c> to stop.'
