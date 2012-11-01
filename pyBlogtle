@@ -78,6 +78,9 @@ def build():
   freezer.freeze()
   print 'done!'
 
+def theme_set(theme='slash'):
+  pass
+
 if __name__ == '__main__':
   if len(sys.argv) > 1:
     if sys.argv[1] == "setup_deploy":
@@ -90,6 +93,11 @@ if __name__ == '__main__':
       elif sys.argv[1] == "bui_dep":
         build()
         deploy()
+      elif sys.argv[1] == "theme_set":
+        if len(sys.argv) > 2:
+          theme_set(sys.argv[2])
+        else
+          pass
       else:
         print 'Running preview, press <ctrl>+<c> to stop.'
         app.run()
