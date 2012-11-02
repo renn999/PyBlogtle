@@ -11,7 +11,7 @@
         {% endif %}
         <section class="archives"><h1 class="year">{{ page.meta.date.strftime("%Y") }}</h1>
       {% endif %}
-      <article>{% set page_url = url_for("page", path=(page.meta.permalink if page.meta.permalink else (page.path +'/'))) %}
+      <article>{% set page_url = url_for("page", path=page.meta.permalink) %}
         <h1 class="title"><a href="{{ page_url }}">{{page.meta.title}}</a></h1>
         <div class="meta">
           <span class="date">{{ page.meta.date.strftime("%b %e") }}</span>

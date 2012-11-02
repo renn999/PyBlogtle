@@ -1,7 +1,7 @@
 {%- set root_url = site.root | rtrim('/') -%}
 {%- if page is defined -%}
   {%- set page_title = page.title -%}
-  {%- set page_url = url_for("page", path=(page.meta.permalink if page.meta.permalink else (page.path +'/'))) -%}
+  {%- set page_url = url_for("page", path=page.meta.permalink) -%}
   {%- set description = page.html -%}
 {%- else -%}
     {%- set page = None -%}

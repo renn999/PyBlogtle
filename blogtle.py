@@ -24,12 +24,6 @@ jinja_ext.filter_add(app)
 pages = FlatPages(app)
 freezer = Freezer(app,log_url_for=False)
 
-def permalink_gen(meta):
-  i = meta['date'].strftime('%Y,%m,%d').split(',')
-  j = PERMALINK_TEMPLATE.replace(':year',i[0]).replace(':month',i[1]).replace(':i_month',str(int(i[1]))).replace(':day',i[2]).replace(':i_day',str(int(i[2]))).replace(':title',meta['title']).replace(' ','-')
-  if not j.endswith('.html') and not j.endswith('/') and not j.endswith('.htm'):
-    j=j+'/'
-  return j
 
 pe_to_pa=dict()
 count=0
@@ -37,16 +31,7 @@ all_categories=[]
 
 for page in pages:
   if page.meta.has_key('permalink') :
-    if not page.meta['permalink'].endswith('.html') and not page.meta['permalink'].endswith('/') and not page.meta['permalink'].endswith('.htm'):
-      page.meta['permalink'] = page.meta['permalink'] + '/'
     pe_to_pa[page.meta['permalink'].lstrip('/')] = page
-  else:
-    if page.meta['layout'] == 'post':
-      pl=permalink_gen(page.meta)
-      page.meta['permalink'] = pl
-      pe_to_pa[pl] = page
-    else:
-      pe_to_pa[page.path+'/']=page
   count = count + 1
   all_categories = list(set(all_categories + page.meta['categories']))
 
@@ -108,6 +93,9 @@ def categories_atom():
 def page(path):
   if path in pe_to_pa:
     page = pe_to_pa[path]
+    return render_template('page.html', page=page)
+  elif (path+'/') in pe_to_pa:
+    page = pe_to_pa[path+'/']
     return render_template('page.html', page=page)
   else:
     return send_from_directory(os.path.join(app.root_path, 'static'),path)

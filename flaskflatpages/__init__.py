@@ -75,13 +75,14 @@ def pygments_style_defs(style='default'):
 
 
 class Page(object):
-    def __init__(self, path, meta_yaml, body, html_renderer):
+    def __init__(self, path, meta_yaml, body, html_renderer,permalink_temp):
         #: Path this pages was obtained from, as in ``pages.get(path)``.
         self.path = path
         #: Content of the pages.
         self.body = body
         self._meta_yaml = meta_yaml
         self.html_renderer = html_renderer
+        self.permalink_temp = permalink_temp
 
     def __repr__(self):
         return '<Page %r>' % self.path
@@ -98,6 +99,22 @@ class Page(object):
         """
         return self.html
 
+    def permalink_gen(self,meta):
+        if meta['layout'] != 'page':
+            i = meta['date'].strftime('%Y,%m,%d').split(',')
+            j = self.permalink_temp.replace(':year',i[0])                 \
+                                   .replace(':month',i[1])                \
+                                   .replace(':i_month',str(int(i[1])))   \
+                                   .replace(':day',i[2])                  \
+                                   .replace(':i_day',str(int(i[2])))     \
+                                   .replace(':title',meta['title'])       \
+                                   .replace(' ','-')
+            if not j.endswith('.html') and not j.endswith('/') and not j.endswith('.htm'):
+                j=j+'/'
+        else:
+            j = self.path
+        return j
+
     @werkzeug.cached_property
     def meta(self):
         """A dict of metadata parsed as YAML from the header of the file."""
@@ -112,6 +129,10 @@ class Page(object):
                 % (self.path, type(meta).__name__))
         if meta.has_key('date'):
             meta['date'] = parser.parse(meta['date'])
+        if meta and not meta.has_key('permalink'):
+            meta['permalink'] = self.permalink_gen(meta)
+        if not meta['permalink'].endswith('.html') and not meta['permalink'].endswith('/') and not meta['permalink'].endswith('.htm'):
+            meta['permalink'] = meta['permalink'] + '/'
         return meta
 
     def __getitem__(self, name):
@@ -121,6 +142,7 @@ class Page(object):
         equivalent to ``page.meta['title']``.
         """
         return self.meta[name]
+    
 
 
 class FlatPages(object):
@@ -155,6 +177,7 @@ class FlatPages(object):
         app.config.setdefault('FLATPAGES_ENCODING', 'utf8')
         app.config.setdefault('FLATPAGES_HTML_RENDERER', pygmented_markdown)
         app.config.setdefault('FLATPAGES_AUTO_RELOAD', 'if debug')
+        app.config.setdefault('PERMALINK_TEMPLATE', '/:year/:month/:day/:title/')
 
         self.app = app
 
@@ -220,7 +243,7 @@ class FlatPages(object):
                 for name in k:
                     full_name = os.path.join(i,name)
                     name_without_extension = name[:-len(extension)]
-                    path = u'/'.join(path_prefix + (name_without_extension,))
+                    path = u'/'.join((i,) + (name_without_extension,))[len(directory):]
                     pages[path] = self._load_file(path, full_name)
 
         extension = self.app.config['FLATPAGES_EXTENSION']
@@ -252,6 +275,7 @@ class FlatPages(object):
         content = u'\n'.join(lines)
 
         html_renderer = self.app.config['FLATPAGES_HTML_RENDERER']
+        permalink_temp = self.app.config['PERMALINK_TEMPLATE']
         if not callable(html_renderer):
             html_renderer = werkzeug.import_string(html_renderer)
-        return Page(path, meta, content, html_renderer)
+        return Page(path, meta, content, html_renderer,permalink_temp)

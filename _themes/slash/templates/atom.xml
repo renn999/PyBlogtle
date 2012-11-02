@@ -17,7 +17,7 @@
   </author>
   <generator uri="http://bbk.renn999.twbbs.org/pyblogtle">pyBlogtle</generator>
 
-  {% for page in pages %}{% set page_url = url_for("page", path=(page.meta.permalink if page.meta.permalink else (page.path +'/'))) %}
+  {% for page in pages %}{% set page_url = url_for("page", path=page.meta.permalink) %}
   <entry>
     <title type="html"><![CDATA[{{ page.meta.title | cdata_escape }}]]></title>
     <link href="{{ site.url }}{{ page_url }}"/>
