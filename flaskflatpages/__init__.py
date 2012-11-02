@@ -216,14 +216,13 @@ class FlatPages(object):
 
         """
         def _walk(directory, path_prefix=()):
-            for name in os.listdir(directory):
-                full_name = os.path.join(directory, name)
-                if os.path.isdir(full_name):
-                    _walk(full_name, path_prefix + (name,))
-                elif name.endswith(extension):
+            for i, j, k in os.walk(directory):
+                for name in k:
+                    full_name = os.path.join(i,name)
                     name_without_extension = name[:-len(extension)]
                     path = u'/'.join(path_prefix + (name_without_extension,))
                     pages[path] = self._load_file(path, full_name)
+
         extension = self.app.config['FLATPAGES_EXTENSION']
         pages = {}
         # Fail if the root is a non-ASCII byte string. Use Unicode.
