@@ -21,39 +21,29 @@ app = Flask(__name__,static_url_path='/',static_folder='static')
 app.config.from_object(__name__)
 jinja_ext.filter_add(app)
 
-pages = FlatPages(app)
+gen_pages = FlatPages(app)
 freezer = Freezer(app,log_url_for=False)
 
-
-pe_to_pa=dict()
-count=0
-all_categories=[]
-
-for page in pages:
-  if page.meta.has_key('permalink') :
-    pe_to_pa[page.meta['permalink'].lstrip('/')] = page
-  count = count + 1
-  all_categories = list(set(all_categories + page.meta['categories']))
-
-pages = sorted(pages,key=lambda x: x.meta['date'],reverse=True)
+pages = sorted(gen_pages,key=lambda x: x.meta['date'],reverse=True)
 post = [page for page in pages if page.meta['layout']=='post']
 
 @app.route('/')
 @app.route('/archives/page/<int:p_num>/')
 def index(p_num=1):
-  global post
+  global post_len
+  post_len = len(post)
   if p_num < 2:
     prev = None
   elif p_num == 2:
     prev = url_for('index')
   else:
     prev = url_for('index',p_num=p_num-1)
-  next = url_for('index',p_num=p_num+1) if p_num < (count//site['paginate']+1) else None
+  next = url_for('index',p_num=p_num+1) if p_num < (post_len//site['paginate']+1) else None
   return render_template('index.html', pages=post[site['paginate']*(p_num-1):site['paginate']*p_num],page_prev = prev, page_next=next)
 
 @freezer.register_generator
 def index():
-  for p_num in range(2,(count//site['paginate']+1)):
+  for p_num in range(3,(post_len//site['paginate']+2)):
     yield {'p_num': p_num}
 
 @app.route('/atom.xml')
@@ -74,7 +64,7 @@ def categories(categories):
 
 @freezer.register_generator
 def categories():
-  for categories in all_categories:
+  for categories in gen_pages.get_categories:
     yield {'categories': categories}
 
 @app.route('/archives/categories/<string:categories>/atom.xml')
@@ -86,23 +76,23 @@ def categories_atom(categories):
 
 @freezer.register_generator
 def categories_atom():
-  for categories in all_categories:
+  for categories in gen_pages.get_categories:
     yield {'categories': categories}
 
 @app.route('/<path:path>')
 def page(path):
-  if path in pe_to_pa:
-    page = pe_to_pa[path]
+  if ('/'+path) in gen_pages.get_all_premalink:
+    page = gen_pages.get_all_premalink['/'+path]
     return render_template('page.html', page=page)
-  elif (path+'/') in pe_to_pa:
-    page = pe_to_pa[path+'/']
+  elif ('/'+path+'/') in gen_pages.get_all_premalink:
+    page = gen_pages.get_all_premalink['/'+path+'/']
     return render_template('page.html', page=page)
   else:
     return send_from_directory(os.path.join(app.root_path, 'static'),path)
 
 @freezer.register_generator
 def page():
-  for path in pe_to_pa.keys():
+  for path in gen_pages.get_all_premalink:
     yield {'path': path }
     
 @app.context_processor
@@ -112,7 +102,7 @@ def inject_globals():
 @app.route('/sitemap.xml')
 def sitemap():
   response = "<?xml version='1.0' encoding='UTF-8'?>\n<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>\n"
-  for i in pe_to_pa.keys():
+  for i in gen_pages.get_all_premalink:
     response += '\t<url>\n'
     response += ('\t\t<loc>'+ site['url'].rstrip('/')+ site['root'].rstrip('/') + '/' + i +'</loc>\n')
     response += '\t\t<lastmod>'+ site['time'].strftime('%Y-%m-%dT%H:%M:%S')+ site['timezone'] +'</lastmod>\n'

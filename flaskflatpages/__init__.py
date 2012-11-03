@@ -8,6 +8,8 @@
 
     :copyright: (c) 2010 by Simon Sapin.
     :license: BSD, see LICENSE for more details.
+
+    modify for pyBlogtle
 """
 
 from __future__ import with_statement
@@ -104,9 +106,9 @@ class Page(object):
             i = meta['date'].strftime('%Y,%m,%d').split(',')
             j = self.permalink_temp.replace(':year',i[0])                 \
                                    .replace(':month',i[1])                \
-                                   .replace(':i_month',str(int(i[1])))   \
+                                   .replace(':i_month',str(int(i[1])))    \
                                    .replace(':day',i[2])                  \
-                                   .replace(':i_day',str(int(i[2])))     \
+                                   .replace(':i_day',str(int(i[2])))      \
                                    .replace(':title',meta['title'])       \
                                    .replace(' ','-')
             if not j.endswith('.html') and not j.endswith('/') and not j.endswith('.htm'):
@@ -251,7 +253,26 @@ class FlatPages(object):
         # Fail if the root is a non-ASCII byte string. Use Unicode.
         _walk(unicode(self.root))
         return pages
-
+        
+    @werkzeug.cached_property
+    def get_categories(self):
+        pages = self._pages
+        i = {}
+        for path in pages:
+            for category in pages[path].meta['categories']:
+                if not i.has_key(category):
+                    i[category] = 0
+                i[category] = i[category] + 1
+        return i
+    
+    @werkzeug.cached_property
+    def get_all_premalink(self):
+        pages = self._pages
+        i = {}
+        for path in pages:
+            i[pages[path].meta['permalink']] = pages[path]
+        return i
+        
     def _load_file(self, path, filename):
         mtime = os.path.getmtime(filename)
         cached = self._file_cache.get(filename)
