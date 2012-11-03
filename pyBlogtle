@@ -100,7 +100,8 @@ if __name__ == '__main__':
           pass
       else:
         print 'Running preview, press <ctrl>+<c> to stop.'
-        app.run()
+        from blogtle import run_app
+        run_app()
     else:
       if sys.argv[1] == "init":
         init(sys.argv[2] if len(sys.argv)>2 else os.getcwd())

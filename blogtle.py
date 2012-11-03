@@ -24,8 +24,7 @@ jinja_ext.filter_add(app)
 gen_pages = FlatPages(app)
 freezer = Freezer(app,log_url_for=False)
 
-pages = sorted(gen_pages,key=lambda x: x.meta['date'],reverse=True)
-post = [page for page in pages if page.meta['layout']=='post']
+post = sorted([page for page in gen_pages.get_pages_by_meta('layout','post')],key=lambda x: x.meta['date'],reverse=True)
 
 @app.route('/')
 @app.route('/archives/page/<int:p_num>/')
@@ -43,7 +42,7 @@ def index(p_num=1):
 
 @freezer.register_generator
 def index():
-  for p_num in range(3,(post_len//site['paginate']+2)):
+  for p_num in range(2,(post_len//site['paginate']+2)):
     yield {'p_num': p_num}
 
 @app.route('/atom.xml')
@@ -59,7 +58,7 @@ def archives():
 
 @app.route('/archives/categories/<string:categories>/')
 def categories(categories):
-  category = [p for p in pages if categories in p.meta.get('categories', [])]
+  category = [p for p in post if categories in p.meta['categories']]
   return render_template('categories.html', pages=category, categories=categories)
 
 @freezer.register_generator
@@ -69,7 +68,7 @@ def categories():
 
 @app.route('/archives/categories/<string:categories>/atom.xml')
 def categories_atom(categories):
-  category = [p for p in pages if categories in p.meta.get('categories', [])][0:5]
+  category = [p for p in post if categories in p.meta['categories']][0:5]
   response = make_response(render_template('atom.xml', pages=category,categories=categories))
   response.mimetype = 'application/xml'
   return response
@@ -112,8 +111,19 @@ def sitemap():
   response.mimetype = 'application/xml'
   return response
 
+def run_app():
+  extra_dirs = ['pages',]
+  extra_files = extra_dirs[:]
+  for extra_dir in extra_dirs:
+    for dirname, dirs, files in os.walk(extra_dir):
+      for filename in files:
+        filename = os.path.join(dirname, filename)
+        if os.path.isfile(filename):
+          extra_files.append(filename)
+  app.run(extra_files=extra_files,debug=True)
+
 if __name__ == '__main__':
   if len(sys.argv) > 1 and sys.argv[1] == "build":
     freezer.freeze()
   else:
-    app.run(debug=True)
+    run_app()

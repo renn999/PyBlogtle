@@ -32,12 +32,6 @@ VERSION = '0.4'
 
 
 def pygmented_markdown(text):
-    """Render Markdown text to HTML. Uses the `Codehilite`_ extension
-    if `Pygments`_ is available.
-
-    .. _Codehilite: http://www.freewisdom.org/projects/python-markdown/CodeHilite
-    .. _Pygments: http://pygments.org/
-    """
     extensions = []
     for i,j,k in os.walk(os.path.join(os.getcwd(),'markdown_ext/')):
         for l in (m for m in k if m.endswith('.py')) :
@@ -61,16 +55,6 @@ def pygmented_markdown(text):
 
 
 def pygments_style_defs(style='default'):
-    """:return: the CSS definitions for the `Codehilite`_ Markdown plugin.
-
-    :param style: The Pygments `style`_ to use.
-
-    Only available if `Pygments`_ is.
-
-    .. _Codehilite: http://www.freewisdom.org/projects/python-markdown/CodeHilite
-    .. _Pygments: http://pygments.org/
-    .. _style: http://pygments.org/docs/styles/
-    """
     import pygments.formatters
     formater = pygments.formatters.HtmlFormatter(style=style)
     return formater.get_style_defs('.codehilite')
@@ -286,6 +270,15 @@ class FlatPages(object):
             page = self._parse(content, path)
             self._file_cache[filename] = page, mtime
         return page
+
+    def get_pages_by_meta(self, meta_name, meta_str):
+        pages = self._pages
+        i=[]
+        for path in pages:
+            if pages[path].meta.has_key(meta_name) and meta_str in pages[path].meta[meta_name]:
+                i += [pages[path]]
+        return i if i else None
+                
 
     def _parse(self, string, path):
         lines = iter(string.split(u'\n'))
