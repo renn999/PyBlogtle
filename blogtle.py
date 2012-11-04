@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 
-import sys, os, datetime, yaml,jinja_ext
+import sys, os, datetime, yaml, jinja_ext, subprocess
 from flask import Flask, render_template, send_from_directory, make_response, url_for
 from flaskflatpages import FlatPages
 from flask_frozen import Freezer
 #import logging
 #logging.basicConfig()
+
+cmd = ['compass','compile']
+p = subprocess.Popen(cmd, cwd=os.getcwd())
+p.wait()
 
 site = yaml.safe_load(open('./_config.yml').read().decode('UTF-8'))
 site['time']=datetime.datetime.now()
@@ -112,7 +116,7 @@ def sitemap():
   return response
 
 def run_app():
-  extra_dirs = ['pages',]
+  extra_dirs = ['pages','sass',]
   extra_files = extra_dirs[:]
   for extra_dir in extra_dirs:
     for dirname, dirs, files in os.walk(extra_dir):

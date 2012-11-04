@@ -28,12 +28,10 @@ def init(path=os.getcwd()):
       print 'The path goes something wrong! Please checkout, or use an other path.'
     else:
       os.mkdir(path)
-  
   if len(os.listdir(path)) == 0:
     folder = ['./']
   else:
     folder = []
-  
   g = Git(path)
   print "Form github cloning into " + path + ( ' ' if len(folder) else 'PyBlogtle/ ' ) + ". Please wait..."
   g.execute(['git','clone','git@github.com:renn999/PyBlogtle.git']+folder)
@@ -41,6 +39,7 @@ def init(path=os.getcwd()):
 
 def setup_deploy():
   i = raw_input('Please enter your git repository url:\n>')
+  k = raw_input('Please enter your git deploy branch [master]:\n>')
   g = Git(os.getcwd())
   g.execute(['git', 'remote', 'rename', 'origin', 'pyBlogtle'])
   g.execute(['git', 'branch', '-m', 'master', 'source'])
@@ -50,6 +49,11 @@ def setup_deploy():
   g = Git(j)
   g.init()
   g.execute(['git','remote','add','origin',i])
+  if not k:
+    k = 'master'
+  else:
+    g.execute(['git', 'branch', '-m', 'master', k])
+  g.execute(['git','push','-u','origin',k])
 
 def deploy():
   build_dir = os.path.join(os.getcwd(),'build')
@@ -69,8 +73,14 @@ def deploy():
   g = Git(deploy_dir)
   g.execute(['git','add','.'])
   now_time =  time.strftime('%X %x %Z')
-  g.execute(['git','commit','-a','-m','Site updated at '+now_time])
-  g.execute(['git','push','origin','master'])
+  try:
+    g.execute(['git','commit','-a','-m','Site updated at '+now_time])
+  except:
+    print 'nothing to commit (working directory clean)'
+  else:
+    print 'now deploy... please wait...'
+    g.execute(['git','push','origin','master'])
+    print 'done!'
 
 def build():
   print 'Building ...'
@@ -78,14 +88,19 @@ def build():
   freezer.freeze()
   print 'done!'
 
-def theme_set(theme='slash'):
+def theme_set(theme):
+  '''
+  theme_dir = os.path.join(os.getcwd(),'_theme',theme)
+  for i in os.listdir(theme_dir):
+    if not i == 'static':
+      if i in os.listdir(os.getcwd()):
+        shutil.copytree(os.path.join(build_dir,i),os.path.join(deploy_dir,i))
+  '''
   pass
-
+   
 if __name__ == '__main__':
   if len(sys.argv) > 1:
-    if sys.argv[1] == "setup_deploy":
-      setup_deploy()
-    elif initial():
+    if initial():
       if sys.argv[1] == "build":
         build()
       elif sys.argv[1] == "deploy":
@@ -94,10 +109,9 @@ if __name__ == '__main__':
         build()
         deploy()
       elif sys.argv[1] == "theme_set":
-        if len(sys.argv) > 2:
-          theme_set(sys.argv[2])
-        else:
-          pass
+        theme_set(sys.argv[2] if len(sys.argv) > 2 else 'slash')
+      elif sys.argv[1] == "setup_deploy":
+        setup_deploy()
       else:
         print 'Running preview, press <ctrl>+<c> to stop.'
         from blogtle import run_app
