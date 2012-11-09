@@ -10,9 +10,12 @@ def initial():
   try:
     global app
     from blogtle import app as app
-    return True
   except:
     return False
+  else:
+    global extent
+    from blogtle import FLATPAGES_EXTENSION as extent
+    return True
 
 def run_help():
   pass
@@ -56,8 +59,8 @@ def setup_deploy():
   g.execute(['git','push','-u','origin',k])
 
 def deploy():
-  build_dir = os.path.join(os.getcwd(),'build')
-  deploy_dir = os.path.join(os.getcwd(),'_deploy')
+  build_dir = os.path.abspath('build')
+  deploy_dir = os.path.abspath('_deploy')
   for i in os.listdir(deploy_dir):
     if i == '.git':
       pass
@@ -97,7 +100,35 @@ def theme_set(theme):
         shutil.copytree(os.path.join(build_dir,i),os.path.join(deploy_dir,i))
   '''
   pass
-   
+
+def new_post_page(layout,title):
+  if layout == 'post':
+    file_title = time.strftime('%Y-%m-%d') + '-' + title.replace(' ','-') + extent
+  elif layout == 'page':
+    file_title = title.replace(' ','-') + extent
+    if not os.path.isdir(file_title[:len(os.path.basename(file_title))]):
+      os.makedirs(os.path.join(os.getcwd(),'pages',file_title[:-len(os.path.basename(file_title))]))
+
+  f = open(os.path.join(os.getcwd(),'pages',file_title),'w+')
+  
+  if layout == 'page':
+    f.write('layout: page\n')
+    f.write('title: '+ os.path.basename(title) +'\n')
+    f.write('date: '+ time.strftime('%Y-%m-%d %H:%M')+'\n')
+    f.write('comments: true\n')
+    f.write('sharing: true\n')
+    f.write('footer: true\n')
+    f.write('categories: []\n\n\n')
+  elif layout == 'post':
+    f.write('layout: post\n')
+    f.write('title: '+ title + '\n')
+    f.write('date: '+ time.strftime('%Y-%m-%d %H:%M')+'\n')
+    f.write('comments: true\n')
+    f.write('categories: []\n')
+    f.write('permalink: \n\n\n')
+  
+  print os.path.join(os.getcwd(),'pages',title) + ' has build...'
+
 if __name__ == '__main__':
   if len(sys.argv) > 1:
     if initial():
@@ -112,6 +143,11 @@ if __name__ == '__main__':
         theme_set(sys.argv[2] if len(sys.argv) > 2 else 'slash')
       elif sys.argv[1] == "setup_deploy":
         setup_deploy()
+      elif sys.argv[1] == "new_post" or sys.argv[1] == 'new_page':
+        if len(sys.argv) > 2:
+          new_post_page(sys.argv[1][4:],sys.argv[2])
+        else:
+          print 'There is No Title!'
       else:
         print 'Running preview, press <ctrl>+<c> to stop.'
         from blogtle import run_app
