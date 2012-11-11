@@ -31,7 +31,7 @@ freezer = Freezer(app,log_url_for=False)
 post = sorted([page for page in gen_pages.get_pages_by_meta('layout','post')],key=lambda x: x.meta['date'],reverse=True)
 
 @app.route('/')
-@app.route('/archives/page/<int:p_num>/')
+@app.route(os.path.join('/',site['pagination_dir'],'page/<int:p_num>/'))
 def index(p_num=1):
   global post_len
   post_len = len(post)
@@ -55,12 +55,12 @@ def atom():
   response.mimetype = 'application/xml'
   return response
 
-@app.route('/archives/')
+@app.route(os.path.join('/',site['pagination_dir'])+'/')
 def archives():
   archives = 'Blog Archives'
   return render_template('categories.html', pages=post,archives=archives)
 
-@app.route('/archives/categories/<string:categories>/')
+@app.route(os.path.join('/',site['category_dir'].rstrip('/'),'<string:categories>/'))
 def categories(categories):
   category = [p for p in post if categories in p.meta['categories']]
   return render_template('categories.html', pages=category, categories=categories)
@@ -70,7 +70,7 @@ def categories():
   for categories in gen_pages.get_categories:
     yield {'categories': categories}
 
-@app.route('/archives/categories/<string:categories>/atom.xml')
+@app.route(os.path.join('/',site['category_dir'].rstrip('/'),'<string:categories>/atom.xml'))
 def categories_atom(categories):
   category = [p for p in post if categories in p.meta['categories']][0:5]
   response = make_response(render_template('atom.xml', pages=category,categories=categories))
