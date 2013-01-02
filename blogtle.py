@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, os, datetime, yaml, jinja_ext, subprocess
+import sys, os, datetime, yaml, jinja_ext, subprocess, time
 from flask import Flask, render_template, send_from_directory, make_response, url_for
 from flaskflatpages import FlatPages
 from flask_frozen import Freezer
@@ -107,8 +107,8 @@ def sitemap():
   response = "<?xml version='1.0' encoding='UTF-8'?>\n<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>\n"
   for i in gen_pages.get_all_premalink:
     response += '\t<url>\n'
-    response += ('\t\t<loc>'+ site['url'].rstrip('/')+ site['root'].rstrip('/') + '/' + i +'</loc>\n')
-    response += '\t\t<lastmod>'+ site['time'].strftime('%Y-%m-%dT%H:%M:%S')+ site['timezone'] +'</lastmod>\n'
+    response += ('\t\t<loc>'+ site['url'].rstrip('/')+ site['root'].rstrip('/') + i +'</loc>\n')
+    response += '\t\t<lastmod>'+ time.strftime('%Y-%m-%dT%H:%M:%S',time.gmtime(gen_pages.get_all_premalink[i].mtime)) + site['timezone'] +'</lastmod>\n'
     response += '\t</url>\n'
   response += '</urlset>'
   response = make_response(response)

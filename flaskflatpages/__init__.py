@@ -231,6 +231,7 @@ class FlatPages(object):
                     name_without_extension = name[:-len(extension)]
                     path = u'/'.join((i,) + (name_without_extension,))[len(directory):]
                     pages[path] = self._load_file(path, full_name)
+                    pages[path].mtime = os.stat(full_name).st_mtime
 
         extension = self.app.config['FLATPAGES_EXTENSION']
         pages = {}
