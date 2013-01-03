@@ -29,12 +29,12 @@ gen_pages = FlatPages(app)
 freezer = Freezer(app,log_url_for=False)
 
 post = sorted([page for page in gen_pages.get_pages_by_meta('layout','post')],key=lambda x: x.meta['date'],reverse=True)
+post_len = len(post)
+
 
 @app.route('/')
 @app.route(os.path.join('/',site['pagination_dir'],'page/<int:p_num>/'))
 def index(p_num=1):
-  global post_len
-  post_len = len(post)
   if p_num < 2:
     prev = None
   elif p_num == 2:
@@ -65,10 +65,19 @@ def categories(categories):
   category = [p for p in post if categories in p.meta['categories']]
   return render_template('categories.html', pages=category, categories=categories)
 
+
+def categories_gen():
+  i = set()
+  for page in gen_pages:
+    i = set(page.meta['categories']) | i
+  return i
+
+categories_generator = categories_gen()
+
 @freezer.register_generator
 def categories():
-  for categories in gen_pages.get_categories:
-    yield {'categories': categories}
+  for i in categories_generator:
+    yield {'categories':i}
 
 @app.route(os.path.join('/',site['category_dir'].rstrip('/'),'<string:categories>/atom.xml'))
 def categories_atom(categories):
@@ -79,8 +88,8 @@ def categories_atom(categories):
 
 @freezer.register_generator
 def categories_atom():
-  for categories in gen_pages.get_categories:
-    yield {'categories': categories}
+  for i in categories_generator:
+    yield {'categories':i}
 
 @app.route('/<path:path>')
 def page(path):

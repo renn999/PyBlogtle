@@ -227,11 +227,14 @@ class FlatPages(object):
         def _walk(directory, path_prefix=()):
             for i, j, k in os.walk(directory):
                 for name in k:
+                  if name != '.gitkeep':
                     full_name = os.path.join(i,name)
                     name_without_extension = name[:-len(extension)]
                     path = u'/'.join((i,) + (name_without_extension,))[len(directory):]
                     pages[path] = self._load_file(path, full_name)
                     pages[path].mtime = os.stat(full_name).st_mtime
+                  else:
+                    pass
 
         extension = self.app.config['FLATPAGES_EXTENSION']
         pages = {}
@@ -239,16 +242,6 @@ class FlatPages(object):
         _walk(unicode(self.root))
         return pages
         
-    @werkzeug.cached_property
-    def get_categories(self):
-        pages = self._pages
-        i = {}
-        for path in pages:
-            for category in pages[path].meta['categories']:
-                if not i.has_key(category):
-                    i[category] = 0
-                i[category] = i[category] + 1
-        return i
     
     @werkzeug.cached_property
     def get_all_premalink(self):
