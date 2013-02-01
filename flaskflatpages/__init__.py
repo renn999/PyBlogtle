@@ -25,15 +25,15 @@ import flask
 
 from werkzeug.utils import import_string
 from dateutil import parser
-
-sys.path.insert(0, os.path.join(os.getcwd(),'markdown_ext/'))
+app_path = os.path.normpath(os.path.join(os.path.dirname( __file__ ),'../markdown_ext/'))
+sys.path.insert(0, app_path)
 
 VERSION = '0.4'
 
 
 def pygmented_markdown(text):
     extensions = []
-    for i,j,k in os.walk(os.path.join(os.getcwd(),'markdown_ext/')):
+    for i,j,k in os.walk(app_path,'markdown_ext/'):
         for l in (m for m in k if m.endswith('.py')) :
             try:
                 l = l.replace('.py','')

@@ -15,13 +15,18 @@ site = yaml.safe_load(open('./_config.yml').read().decode('UTF-8'))
 site['time']=datetime.datetime.now()
 site['timezone']='+0800'
 DEBUG = True
+FLATPAGES_ROOT = os.path.join(os.getcwd(),'pages')
 FLATPAGES_AUTO_RELOAD = DEBUG
 FLATPAGES_EXTENSION = '.markdown'
 FREEZER_BASE_URL = site['root'].rstrip('/')
-
+FREEZER_DESTINATION = os.path.join(os.getcwd(),'build')
 PERMALINK_TEMPLATE=site['permalink']
 
-app = Flask(__name__,static_url_path='/',static_folder='static')
+app = Flask(__name__,
+            static_url_path='/',
+            static_folder=os.path.join(os.getcwd(),'static'),
+            template_folder=os.path.join(os.getcwd(),'templates')
+           )
 app.config.from_object(__name__)
 jinja_ext.filter_add(app)
 
@@ -100,7 +105,7 @@ def page(path):
     page = gen_pages.get_all_premalink['/'+path+'/']
     return render_template('page.html', page=page)
   else:
-    return send_from_directory(os.path.join(app.root_path, 'static'),path)
+    return send_from_directory(os.path.join(os.getcwd(), 'static'),path)
 
 @freezer.register_generator
 def page():
