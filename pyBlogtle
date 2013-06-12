@@ -35,10 +35,12 @@ def init(path=os.getcwd()):
     folder = ['./']
   else:
     folder = []
+  '''
   g = Git(path)
   print "Form github cloning into " + path + ( ' ' if len(folder) else 'PyBlogtle/ ' ) + ". Please wait..."
   g.execute(['git','clone','git@github.com:renn999/PyBlogtle.git']+folder)
   print "Git clone complete. please Try to make configurate in _config.yml and where do you want to host blog"
+	'''
 
 def setup_deploy():
   i = raw_input('Please enter your git repository url:\n>')
