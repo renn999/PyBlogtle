@@ -18,7 +18,7 @@ class IncludeCodeExtension(markdown.Extension):
 
         md.preprocessors.add('include_code',
                                  IncludeCodePreprocessor(md),
-                                 "_begin")
+                                 ">normalize_whitespace")
 
 
 class IncludeCodePreprocessor(markdown.preprocessors.Preprocessor):
@@ -83,7 +83,8 @@ class IncludeCodePreprocessor(markdown.preprocessors.Preprocessor):
 def makeExtension(configs=None):
     return IncludeCodeExtension(configs=configs)
 
-
+'''
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
+'''

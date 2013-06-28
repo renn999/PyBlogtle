@@ -19,7 +19,7 @@ class OctoCodeExtension(markdown.Extension):
 
         md.preprocessors.add('octo_code',
                                  OctoBlockPreprocessor(md),
-                                 "_begin")
+                                 ">normalize_whitespace")
 
 
 class OctoBlockPreprocessor(markdown.preprocessors.Preprocessor):
