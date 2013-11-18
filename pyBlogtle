@@ -18,7 +18,27 @@ def initial():
     return True
 
 def run_help():
-  pass
+  print "Usable commands: init, build, deploy, bui_dep, theme_set, new_post, preview"
+  print "\tinit:"
+  print "\t\tTo copy pyblogtle basic elements to folder."
+  print "\n"
+  print "build:"
+  print "\t\tTo turn posts to Html."
+  print "\n"
+  print "\tdeploy:"
+  print "\t\tPush the blog to web."
+  print "\n"
+  print "\tbui_dep:"
+  print "\t\tIt is mean Build then deploy."
+  print "\n"
+  print "\ttheme_set:"
+  print "\t\tSet theme."
+  print "\n"
+  print "\tnew_post:"
+  print "\t\tTo generate basic post."
+  print "\n"
+  print "\tpreview:"
+  print "\t\tTo preview the blog."
 
 def init(path=os.getcwd()):
   if path[0] != '.' and path[0] != '/':
